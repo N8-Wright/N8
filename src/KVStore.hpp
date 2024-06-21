@@ -3,6 +3,7 @@
 #include <cstdio>
 #include <string_view>
 #include <string>
+#include <shared_mutex>
 
 namespace N8 {
   class KVStore {
@@ -10,6 +11,7 @@ namespace N8 {
     std::FILE* m_file = nullptr;
     std::filesystem::path m_filepath;
     std::unordered_map<std::string, uint64_t> m_offsets;
+    mutable std::shared_mutex m_mutex;
     
   public:
     KVStore(std::filesystem::path filepath);

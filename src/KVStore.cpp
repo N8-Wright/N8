@@ -4,6 +4,7 @@
 #include <cerrno>
 #include <vector>
 #include <string.h>
+#include <utility>
 
 using namespace std;
 
@@ -16,10 +17,48 @@ namespace N8 {
   KVStore::KVStore(filesystem::path filepath) {
     m_file = fopen(filepath.c_str(), "ab+");
     if (m_file == nullptr) {
-      throw std::system_error(make_error_code(errc(errno)), "unable to open file");
+      throw system_error(make_error_code(errc(errno)), "unable to open file");
     }
 
     m_filepath = std::move(filepath);
+
+    // Because we've open the file as append, we are already placed at
+    // the end of it.
+    const auto fileSize = ftell(m_file);
+    if (fileSize != 0) {
+      uint64_t offset = 0;
+
+      // Start at the beginning of the file.
+      if (fseek(m_file, 0, SEEK_SET) != 0) {
+	  fclose(m_file);
+	  throw std::system_error(make_error_code(errc(errno)), "unable to seek");
+      }
+      
+      while (offset < fileSize) {
+	RecordHeader header;
+	if (fread(&header, sizeof(header), 1, m_file) != 1) {
+	  fclose(m_file);
+	  throw system_error(make_error_code(errc(errno)), "unable to read header");
+	}
+
+	string key;
+	key.resize(header.KeySize);
+	if (fread(key.data(), header.KeySize, 1, m_file) != 1) {
+	  fclose(m_file);
+	  throw system_error(make_error_code(errc(errno)), "unable to read key");
+	}
+
+	m_offsets[key] = offset;
+
+	// We've read the header and key, now skip the value
+	if (fseek(m_file, header.ValueSize, SEEK_CUR) != 0) {
+	  fclose(m_file);
+	  throw std::system_error(make_error_code(errc(errno)), "unable to seek");
+	}
+
+	offset += ftell(m_file);
+      }
+    }
   }
 
   KVStore::~KVStore() {
@@ -29,19 +68,24 @@ namespace N8 {
   }
 
   KVStore::KVStore(KVStore&& other) noexcept
-    : m_file(exchange(other.m_file, nullptr)) {
+    : m_file(exchange(other.m_file, nullptr)),
+      m_filepath(std::move(other.m_filepath)),
+      m_offsets(std::move(other.m_offsets)) {
   }
-  
+
   KVStore& KVStore::operator=(KVStore&& other) noexcept {
     swap(m_file, other.m_file);
+    swap(m_filepath, other.m_filepath);
+    swap(m_offsets, other.m_offsets);
     return *this;
   }
 
   void KVStore::Put(std::string_view key, std::string_view value) {
+    std::unique_lock lock(m_mutex);
     vector<uint8_t> buffer;
 
     m_offsets[std::string(key)] = ftell(m_file);
-    
+
     buffer.resize(sizeof(RecordHeader) + key.size() + value.size());
     RecordHeader header {
       .KeySize = key.size(),
@@ -60,6 +104,7 @@ namespace N8 {
   }
 
   string KVStore::Get(string_view key) {
+    std::shared_lock lock(m_mutex);
     const auto offset = m_offsets.find(key.data());
     if (offset == m_offsets.end()) {
       return "";
@@ -77,20 +122,21 @@ namespace N8 {
 
     RecordHeader header;
     if (fread(&header, sizeof(header), 1, handle) != 1) {
-      fclose(handle);      
+      fclose(handle);
       throw system_error(make_error_code(errc(errno)), "unable to read header");
     }
 
+    // Skip over the key array. We don't need it right now.
     if (fseek(handle, header.KeySize, SEEK_CUR) != 0) {
-      fclose(handle);      
+      fclose(handle);
       throw std::system_error(make_error_code(errc(errno)), "unable to seek");
     }
 
     string value;
     value.resize(header.ValueSize);
     if (fread(value.data(), header.ValueSize, 1, handle) != 1) {
-      fclose(handle);      
-      throw system_error(make_error_code(errc(errno)), "unable to read value");      
+      fclose(handle);
+      throw system_error(make_error_code(errc(errno)), "unable to read value");
     }
 
     fclose(handle);
