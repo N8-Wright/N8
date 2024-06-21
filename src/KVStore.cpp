@@ -33,7 +33,7 @@ namespace N8 {
 	  fclose(m_file);
 	  throw std::system_error(make_error_code(errc(errno)), "unable to seek");
       }
-      
+
       while (offset < fileSize) {
 	RecordHeader header;
 	if (fread(&header, sizeof(header), 1, m_file) != 1) {
@@ -48,15 +48,20 @@ namespace N8 {
 	  throw system_error(make_error_code(errc(errno)), "unable to read key");
 	}
 
-	m_offsets[key] = offset;
-
-	// We've read the header and key, now skip the value
-	if (fseek(m_file, header.ValueSize, SEEK_CUR) != 0) {
-	  fclose(m_file);
-	  throw std::system_error(make_error_code(errc(errno)), "unable to seek");
+	if (header.ValueSize == 0) {
+	  // A zero valued header indicates a tombstone.
+	  m_offsets.erase(key);
+	}
+	else {
+	  m_offsets[key] = offset;
+	  // We've read the header and key, now skip the value
+	  if (fseek(m_file, header.ValueSize, SEEK_CUR) != 0) {
+	    fclose(m_file);
+	    throw std::system_error(make_error_code(errc(errno)), "unable to seek");
+	  }
 	}
 
-	offset += ftell(m_file);
+	offset = ftell(m_file);
       }
     }
   }
@@ -81,7 +86,7 @@ namespace N8 {
   }
 
   void KVStore::Put(std::string_view key, std::string_view value) {
-    std::unique_lock lock(m_mutex);
+    unique_lock lock(m_mutex);
     vector<uint8_t> buffer;
 
     m_offsets[std::string(key)] = ftell(m_file);
@@ -104,8 +109,8 @@ namespace N8 {
   }
 
   string KVStore::Get(string_view key) {
-    std::shared_lock lock(m_mutex);
-    const auto offset = m_offsets.find(key.data());
+    shared_lock lock(m_mutex);
+    const auto offset = m_offsets.find(key);
     if (offset == m_offsets.end()) {
       return "";
     }
@@ -141,5 +146,27 @@ namespace N8 {
 
     fclose(handle);
     return value;
+  }
+
+  void KVStore::Delete(string_view key) {
+    unique_lock lock(m_mutex);
+    const auto result = m_offsets.find(key);
+    if (result != m_offsets.end()) {
+      m_offsets.erase(result);
+      vector<uint8_t> buffer;
+      buffer.resize(sizeof(RecordHeader) + key.size());
+
+      RecordHeader header {
+	.KeySize = key.size(),
+	.ValueSize = 0,
+      };
+
+      memcpy(buffer.data(), &header, sizeof(header));
+      copy(key.begin(),
+	   key.end(),
+	   buffer.begin() + sizeof(header));
+      fwrite(buffer.data(), buffer.size(), 1, m_file);
+      fflush(m_file);
+    }
   }
 }
