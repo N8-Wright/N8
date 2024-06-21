@@ -1,12 +1,16 @@
 #pragma once
-#include <span>
 #include <filesystem>
 #include <cstdio>
+#include <string_view>
+#include <string>
 
 namespace N8 {
   class KVStore {
   private:
     std::FILE* m_file = nullptr;
+    std::filesystem::path m_filepath;
+    std::unordered_map<std::string, uint64_t> m_offsets;
+    
   public:
     KVStore(std::filesystem::path filepath);
     ~KVStore();
@@ -15,6 +19,7 @@ namespace N8 {
     KVStore& operator=(const KVStore&) = delete;
     KVStore& operator=(KVStore&&) noexcept;
 
-    void Put(std::span<uint8_t> key, std::span<uint8_t> value);
+    void Put(std::string_view key, std::string_view value);
+    std::string Get(std::string_view key);
   };
 }
