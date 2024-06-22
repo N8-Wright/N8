@@ -23,6 +23,7 @@ namespace N8 {
     KVStore& operator=(const KVStore&) = delete;
     KVStore& operator=(KVStore&&) noexcept;
 
+    const std::filesystem::path& Path() { return m_filepath; };
     void Put(std::string_view key, std::string_view value);
     std::string Get(std::string_view key);
     void Delete(std::string_view key);

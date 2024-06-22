@@ -6,3 +6,4 @@ add_compile_options(-fsanitize=address,undefined)
 add_link_options(-fsanitize=address,undefined)
 
 add_subdirectory(src)
+add_subdirectory(test)
