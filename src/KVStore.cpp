@@ -1,9 +1,8 @@
 #include "KVStore.hpp"
-#include <format>
 #include <system_error>
 #include <cerrno>
 #include <vector>
-#include <string.h>
+#include <cstring>
 #include <utility>
 #include <sstream>
 
