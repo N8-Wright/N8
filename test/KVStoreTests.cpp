@@ -32,6 +32,19 @@ TEST_F(KVStoreTests, PutThenGet_ReturnsExpectedValue) {
   EXPECT_EQ(value, "123");
 }
 
+TEST_F(KVStoreTests, PutThenGet_Restart_ReturnsExpectedValue) {
+  // Arrange
+  m_kvStore->Put("abc", "123");
+
+  // Act
+  m_kvStore.reset();
+  KVStore restarted(m_path);
+
+  // Assert
+  const auto value = restarted.Get("abc");  
+  EXPECT_EQ(value, "123");
+}
+
 TEST_F(KVStoreTests, PutTwiceSameKeyThenGet_ReturnsExpectedValue) {
   // Arrange
   m_kvStore->Put("abc", "123");

@@ -5,6 +5,7 @@
 #include <vector>
 #include <string.h>
 #include <utility>
+#include <sstream>
 
 using namespace std;
 
@@ -168,5 +169,9 @@ namespace N8 {
       fwrite(buffer.data(), buffer.size(), 1, m_file);
       fflush(m_file);
     }
+  }
+
+  void KVStore::Trim() {
+    
   }
 }
