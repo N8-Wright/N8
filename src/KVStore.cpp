@@ -27,7 +27,7 @@ namespace N8 {
     // the end of it.
     const auto fileSize = ftell(m_file);
     if (fileSize != 0) {
-      uint64_t offset = 0;
+      long offset = 0;
 
       // Start at the beginning of the file.
       if (fseek(m_file, 0, SEEK_SET) != 0) {
