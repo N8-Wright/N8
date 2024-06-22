@@ -4,5 +4,4 @@ add_library(N8Objects OBJECT
 )
 
 
-add_executable(test test.cpp $<TARGET_OBJECTS:N8Objects>)
 		    
