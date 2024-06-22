@@ -16,7 +16,7 @@ struct RecordHeader {
 
 namespace N8 {
   KVStore::KVStore(filesystem::path filepath) {
-    m_file = fopen(filepath.c_str(), "ab+");
+    m_file = fopen((const char*)filepath.c_str(), "ab+");
     if (m_file == nullptr) {
       throw system_error(make_error_code(errc(errno)), "unable to open file");
     }
@@ -56,7 +56,7 @@ namespace N8 {
 	else {
 	  m_offsets[key] = offset;
 	  // We've read the header and key, now skip the value
-	  if (fseek(m_file, header.ValueSize, SEEK_CUR) != 0) {
+	  if (fseek(m_file, (long)header.ValueSize, SEEK_CUR) != 0) {
 	    fclose(m_file);
 	    throw std::system_error(make_error_code(errc(errno)), "unable to seek");
 	  }
@@ -121,7 +121,7 @@ namespace N8 {
       return "";
     }
 
-    if (fseek(handle, offset->second, SEEK_SET) != 0) {
+    if (fseek(handle, (long)offset->second, SEEK_SET) != 0) {
       fclose(handle);
       throw std::system_error(make_error_code(errc(errno)), "unable to seek");
     }
@@ -133,7 +133,7 @@ namespace N8 {
     }
 
     // Skip over the key array. We don't need it right now.
-    if (fseek(handle, header.KeySize, SEEK_CUR) != 0) {
+    if (fseek(handle, (long)header.KeySize, SEEK_CUR) != 0) {
       fclose(handle);
       throw std::system_error(make_error_code(errc(errno)), "unable to seek");
     }
