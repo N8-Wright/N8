@@ -5,6 +5,7 @@
 #include <cstring>
 #include <utility>
 #include <sstream>
+#include <mutex>
 
 using namespace std;
 
@@ -85,7 +86,7 @@ namespace N8 {
     return *this;
   }
 
-  void KVStore::Put(std::string_view key, std::string_view value) {
+  void KVStore::Put(string_view key, string_view value) {
     unique_lock lock(m_mutex);
     vector<uint8_t> buffer;
 
