@@ -12,7 +12,7 @@ namespace N8 {
   private:
     std::FILE* m_file = nullptr;
     std::filesystem::path m_filepath;
-    std::unordered_map<std::string, uint64_t, StringHash, std::equal_to<>> m_offsets;
+    std::unordered_map<std::string, long, StringHash, std::equal_to<>> m_offsets;
     mutable std::shared_mutex m_mutex;
     
   public:
