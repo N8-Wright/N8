@@ -6,7 +6,7 @@
 #include <utility>
 #include <sstream>
 #include <mutex>
-
+#include <iostream>
 using namespace std;
 
 struct RecordHeader {
@@ -69,7 +69,9 @@ namespace N8 {
 
   KVStore::~KVStore() {
     if (m_file != nullptr) {
-      fclose(m_file);
+      if (fclose(m_file) != 0) {
+	cerr << "unable to close " << m_filepath << endl;
+      }
     }
   }
 
