@@ -16,7 +16,7 @@ namespace N8 {
     mutable std::shared_mutex m_mutex;
     
   public:
-    KVStore(std::filesystem::path filepath);
+    KVStore(const std::filesystem::path& filepath);
     ~KVStore();
     KVStore(const KVStore&) = delete;
     KVStore(KVStore&&) noexcept;

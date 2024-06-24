@@ -15,13 +15,14 @@ struct RecordHeader {
 };
 
 namespace N8 {
-  KVStore::KVStore(filesystem::path filepath) {
+  KVStore::KVStore(const filesystem::path& filepath) {
+    cout << "Attempting to open " << filepath << endl;
     m_file = fopen((const char*)filepath.c_str(), "ab+");
     if (m_file == nullptr) {
       throw system_error(make_error_code(errc(errno)), "unable to open file");
     }
 
-    m_filepath = std::move(filepath);
+    m_filepath = filepath;
 
     // Because we've open the file as append, we are already placed at
     // the end of it.
