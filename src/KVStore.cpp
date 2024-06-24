@@ -115,6 +115,8 @@ namespace N8 {
 	 buffer.begin() + sizeof(header) + header.KeySize);
     fwrite(buffer.data(), buffer.size(), 1, m_file);
     fflush(m_file);
+
+    cout << "Wrote " << key << ": " << value << endl;
   }
 
   string KVStore::Get(string_view key) {
