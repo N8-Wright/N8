@@ -37,11 +37,10 @@ TEST_F(KVStoreTests, PutThenGet_Restart_ReturnsExpectedValue) {
   m_kvStore->Put("abc", "123");
 
   // Act
-  m_kvStore.reset();
-  KVStore restarted(m_path);
+  m_kvStore = std::make_unique<KVStore>(m_path);
 
   // Assert
-  const auto value = restarted.Get("abc");  
+  const auto value = m_kvStore->Get("abc");
   EXPECT_EQ(value, "123");
 }
 
@@ -64,11 +63,10 @@ TEST_F(KVStoreTests, PutTwiceSameKeyThenGet_Restart_ReturnsExpectedValue) {
   m_kvStore->Put("abc", "456789");
 
   // Act
-  m_kvStore.reset();
-  KVStore restarted(m_path);
+  m_kvStore = std::make_unique<KVStore>(m_path);
 
   // Assert
-  const auto value = restarted.Get("abc");
+  const auto value = m_kvStore->Get("abc");
   EXPECT_EQ(value, "456789");
 }
 
