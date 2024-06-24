@@ -27,6 +27,7 @@ namespace N8 {
     // the end of it.
     const auto fileSize = ftell(m_file);
     if (fileSize != 0) {
+      cout << "File is not empty, reading contents..." << endl;
       long offset = 0;
 
       // Start at the beginning of the file.
@@ -65,6 +66,10 @@ namespace N8 {
 	offset = ftell(m_file);
       }
     }
+    else {
+      cout << "File is empty..." << endl;
+    }
+      
   }
 
   KVStore::~KVStore() {
