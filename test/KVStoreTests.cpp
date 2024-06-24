@@ -5,7 +5,6 @@ using namespace N8;
 class KVStoreTests : public testing::Test {
 protected:
   KVStoreTests() : m_kvStore(std::make_unique<KVStore>([] {
-    srand(time(NULL));
     std::stringstream ss;
     ss << "KVStoreTests." << rand();
     return ss.str();
