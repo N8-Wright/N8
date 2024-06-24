@@ -78,6 +78,8 @@ namespace N8 {
       if (fclose(m_file) != 0) {
 	cerr << "unable to close " << m_filepath << endl;
       }
+
+      cout << "Successfully closed " << m_filepath << endl;
     }
   }
 
