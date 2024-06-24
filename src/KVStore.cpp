@@ -116,7 +116,7 @@ namespace N8 {
       return "";
     }
 
-    auto handle = fopen(m_filepath.c_str(), "rb");
+    auto handle = fopen((const char*)m_filepath.c_str(), "rb");
     if (handle == nullptr) {
       return "";
     }
