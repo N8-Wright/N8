@@ -14,6 +14,7 @@ string GenerateFileName(string_view prefix) {
 class KVStoreTests : public testing::Test {
 protected:
   void SetUp() override {
+    srand(time(nullptr));
     m_kvStore = std::make_unique<KVStore>(GenerateFileName("KVStoreTests"));
     m_path = m_kvStore->Path();
   }
