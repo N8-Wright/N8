@@ -26,6 +26,11 @@ namespace N8 {
 
     // Because we've open the file as append, we are already placed at
     // the end of it.
+    if (fseek(m_file, 0, SEEK_END) != 0) {
+      fclose(m_file);
+      throw system_error(make_error_code(errc(errno)), "unable to seek to end of file");
+    }
+    
     const auto fileSize = ftell(m_file);
     if (fileSize != 0) {
       cout << "File is not empty, reading contents..." << endl;
@@ -70,7 +75,7 @@ namespace N8 {
     else {
       cout << "File is empty..." << endl;
     }
-      
+
   }
 
   KVStore::~KVStore() {
@@ -184,6 +189,6 @@ namespace N8 {
   }
 
   void KVStore::Trim() {
-    
+
   }
 }
