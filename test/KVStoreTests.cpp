@@ -1,9 +1,11 @@
 #include <gtest/gtest.h>
+#include <iostream>
 #include "KVStore.hpp"
 using namespace std;
 using namespace N8;
 
 string GenerateFileName(string_view prefix) {
+  cout << "GenerateFileName called" << endl;
   stringstream ss;
   ss << prefix << "." << rand();
   return ss.str();
