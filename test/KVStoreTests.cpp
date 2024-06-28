@@ -1,13 +1,18 @@
 #include <gtest/gtest.h>
 #include <iostream>
+#include <random>
 #include "KVStore.hpp"
 using namespace std;
 using namespace N8;
 
 string GenerateFileName(string_view prefix) {
-  cout << "GenerateFileName called" << endl;
+  random_device rd;
+  mt19937 gen(rd()); 
+  uniform_int_distribution<> dis(0, numeric_limits<int>::max());
+  const auto randomNum = dis(gen);
+  
   stringstream ss;
-  ss << prefix << "." << rand();
+  ss << prefix << "." << randomNum;
   return ss.str();
 }
 
