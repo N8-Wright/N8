@@ -2,13 +2,18 @@
 #include "KVStore.hpp"
 using namespace std;
 using namespace N8;
+
+string GenerateFileName(string_view prefix) {
+  stringstream ss;
+  ss << prefix << "." << rand();
+  return ss.str();
+}
+
 class KVStoreTests : public testing::Test {
 protected:
-  KVStoreTests() : m_kvStore(std::make_unique<KVStore>([] {
-    std::stringstream ss;
-    ss << "KVStoreTests." << rand();
-    return ss.str();
-  }())), m_path(m_kvStore->Path()) {
+  KVStoreTests()
+    : m_kvStore(std::make_unique<KVStore>(GenerateFileName("KVStoreTests"))),
+      m_path(m_kvStore->Path()) {
   }
 
   ~KVStoreTests() {
