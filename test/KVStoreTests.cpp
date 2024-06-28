@@ -25,8 +25,8 @@ protected:
   }
 
   void TearDown() override {
-    filesystem::remove(m_path);
     m_kvStore.reset();
+    filesystem::remove(m_path);
   }
 
   std::unique_ptr<KVStore> m_kvStore;
