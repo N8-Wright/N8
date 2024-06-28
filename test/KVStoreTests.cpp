@@ -11,12 +11,12 @@ string GenerateFileName(string_view prefix) {
 
 class KVStoreTests : public testing::Test {
 protected:
-  KVStoreTests()
-    : m_kvStore(std::make_unique<KVStore>(GenerateFileName("KVStoreTests"))),
-      m_path(m_kvStore->Path()) {
+  void SetUp() override {
+    m_kvStore = std::make_unique<KVStore>(GenerateFileName("KVStoreTests"));
+    m_path = m_kvStore->Path();
   }
 
-  ~KVStoreTests() {
+  void TearDown() override {
     filesystem::remove(m_path);
     m_kvStore.reset();
   }
