@@ -13,7 +13,7 @@ else()
 		-Wimplicit-fallthrough -Werror=format-security -Werror=implicit
 		-Werror=incompatible-pointer-types -Werror=int-conversion
 		-U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=3
-		-D_GLIBCXX_ASSERTIONS -fstrict-flex-arrays=2
+		-D_GLIBCXX_ASSERTIONS
 		-fstack-protector-strong 
 		-Wno-unqualified-std-cast-call
 	)
