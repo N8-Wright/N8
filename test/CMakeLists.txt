@@ -19,3 +19,15 @@ target_link_libraries(KVStoreTests GTest::gtest_main)
 target_include_directories(KVStoreTests PRIVATE "../src")
 gtest_discover_tests(KVStoreTests)
 
+target_compile_options(KVStoreTests PRIVATE
+	"$<$<CONFIG:Debug>:${N8_COMPILE_OPTIONS_DEBUG}>"
+	"$<$<CONFIG:RelWithDebInfo>:${N8_COMPILE_OPTIONS_DEBUG}>"
+	"$<$<CONFIG:Release>:${N8_COMPILE_OPTIONS_RELEASE}>"
+	"$<$<CONFIG:MinSizeRel>:${N8_COMPILE_OPTIONS_RELEASE}>"
+)
+target_link_options(KVStoreTests PRIVATE
+	"$<$<CONFIG:Debug>:${N8_LINK_OPTIONS_DEBUG}>"
+	"$<$<CONFIG:RelWithDebInfo>:${N8_LINK_OPTIONS_DEBUG}>"
+	"$<$<CONFIG:Release>:${N8_LINK_OPTIONS}>"
+	"$<$<CONFIG:MinSizeRel>:${N8_LINK_OPTIONS}>"
+)

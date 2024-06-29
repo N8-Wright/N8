@@ -107,9 +107,11 @@ namespace N8 {
     copy(key.begin(),
 	 key.end(),
 	 buffer.begin() + sizeof(header));
+
+    const auto offset = sizeof(header) + header.KeySize;
     copy(value.begin(),
 	 value.end(),
-	 buffer.begin() + sizeof(header) + header.KeySize);
+	 buffer.begin() + static_cast<long>(offset));
     fwrite(buffer.data(), buffer.size(), 1, m_file);
     fflush(m_file);
   }
