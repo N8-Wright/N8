@@ -8,7 +8,16 @@
 #include <mutex>
 using namespace std;
 
+uint32_t CurrentFormat = 1;
 struct RecordHeader {
+  RecordHeader(uint64_t keySize, uint64_t valueSize)
+    : Format(CurrentFormat), Reserved(0),
+      KeySize(keySize), ValueSize(valueSize) {
+  }
+
+  RecordHeader() {};
+  uint32_t Format;
+  uint32_t Reserved;
   uint64_t KeySize;
   uint64_t ValueSize;
 };
@@ -98,11 +107,7 @@ namespace N8 {
     m_offsets[string(key)] = ftell(m_file);
 
     buffer.resize(sizeof(RecordHeader) + key.size() + value.size());
-    RecordHeader header {
-      .KeySize = key.size(),
-      .ValueSize = value.size(),
-    };
-
+    RecordHeader header(key.size(), value.size());
     memcpy(buffer.data(), &header, sizeof(header));
     copy(key.begin(),
 	 key.end(),
@@ -164,11 +169,7 @@ namespace N8 {
       vector<uint8_t> buffer;
       buffer.resize(sizeof(RecordHeader) + key.size());
 
-      RecordHeader header {
-	.KeySize = key.size(),
-	.ValueSize = 0,
-      };
-
+      RecordHeader header(key.size(), 0);
       memcpy(buffer.data(), &header, sizeof(header));
       copy(key.begin(),
 	   key.end(),
