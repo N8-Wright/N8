@@ -35,7 +35,7 @@ else()
 	set(N8_LINK_OPTIONS_DEBUG ${N8_LINK_OPTIONS} -fsanitize=address,undefined)
 	set(N8_COMPILE_OPTIONS_RELEASE ${N8_COMPILE_OPTIONS}
 		-O3 -fno-delete-null-pointer-checks -fno-strict-overflow
-		-fno-strict-aliasing -ftrivial-auto-var-init=zero
+		-fno-strict-aliasing
 	)
 endif()
 
