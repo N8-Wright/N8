@@ -6,7 +6,6 @@
 #include <utility>
 #include <sstream>
 #include <mutex>
-#include <iostream>
 using namespace std;
 
 struct RecordHeader {
@@ -16,7 +15,6 @@ struct RecordHeader {
 
 namespace N8 {
   KVStore::KVStore(const filesystem::path& filepath) {
-    cout << "Attempting to open " << filepath << endl;
     m_file = fopen((const char*)filepath.c_str(), "ab+");
     if (m_file == nullptr) {
       throw system_error(make_error_code(errc(errno)), "unable to open file");
@@ -33,13 +31,12 @@ namespace N8 {
     
     const auto fileSize = ftell(m_file);
     if (fileSize != 0) {
-      cout << "File is not empty, reading contents..." << endl;
       long offset = 0;
 
       // Start at the beginning of the file.
       if (fseek(m_file, 0, SEEK_SET) != 0) {
 	  fclose(m_file);
-	  throw std::system_error(make_error_code(errc(errno)), "unable to seek");
+	  throw system_error(make_error_code(errc(errno)), "unable to seek");
       }
 
       while (offset < fileSize) {
@@ -65,33 +62,26 @@ namespace N8 {
 	  // We've read the header and key, now skip the value
 	  if (fseek(m_file, (long)header.ValueSize, SEEK_CUR) != 0) {
 	    fclose(m_file);
-	    throw std::system_error(make_error_code(errc(errno)), "unable to seek");
+	    throw system_error(make_error_code(errc(errno)), "unable to seek");
 	  }
 	}
 
 	offset = ftell(m_file);
       }
     }
-    else {
-      cout << "File is empty..." << endl;
-    }
-
   }
 
   KVStore::~KVStore() {
     if (m_file != nullptr) {
-      if (fclose(m_file) != 0) {
-	cerr << "unable to close " << m_filepath << endl;
-      }
-
-      cout << "Successfully closed " << m_filepath << endl;
+      // TODO: Make more robust.
+      fclose(m_file);
     }
   }
 
   KVStore::KVStore(KVStore&& other) noexcept
     : m_file(exchange(other.m_file, nullptr)),
-      m_filepath(std::move(other.m_filepath)),
-      m_offsets(std::move(other.m_offsets)) {
+      m_filepath(move(other.m_filepath)),
+      m_offsets(move(other.m_offsets)) {
   }
 
   KVStore& KVStore::operator=(KVStore&& other) noexcept {
@@ -105,7 +95,7 @@ namespace N8 {
     unique_lock lock(m_mutex);
     vector<uint8_t> buffer;
 
-    m_offsets[std::string(key)] = ftell(m_file);
+    m_offsets[string(key)] = ftell(m_file);
 
     buffer.resize(sizeof(RecordHeader) + key.size() + value.size());
     RecordHeader header {
@@ -122,8 +112,6 @@ namespace N8 {
 	 buffer.begin() + sizeof(header) + header.KeySize);
     fwrite(buffer.data(), buffer.size(), 1, m_file);
     fflush(m_file);
-
-    cout << "Wrote " << key << ": " << value << endl;
   }
 
   string KVStore::Get(string_view key) {
@@ -140,7 +128,7 @@ namespace N8 {
 
     if (fseek(handle, (long)offset->second, SEEK_SET) != 0) {
       fclose(handle);
-      throw std::system_error(make_error_code(errc(errno)), "unable to seek");
+      throw system_error(make_error_code(errc(errno)), "unable to seek");
     }
 
     RecordHeader header;
@@ -152,7 +140,7 @@ namespace N8 {
     // Skip over the key array. We don't need it right now.
     if (fseek(handle, (long)header.KeySize, SEEK_CUR) != 0) {
       fclose(handle);
-      throw std::system_error(make_error_code(errc(errno)), "unable to seek");
+      throw system_error(make_error_code(errc(errno)), "unable to seek");
     }
 
     string value;
