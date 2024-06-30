@@ -2,6 +2,13 @@ cmake_minimum_required(VERSION 3.5)
 project(N8 LANGUAGES CXX)
 set(CMAKE_CXX_STANDARD 20)
 
+file(
+  DOWNLOAD
+  https://github.com/cpm-cmake/CPM.cmake/releases/download/v0.40.0/CPM.cmake
+  ${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake
+  EXPECTED_HASH SHA256=7b354f3a5976c4626c876850c93944e52c83ec59a159ae5de5be7983f0e17a2a
+)
+include(${CMAKE_CURRENT_BINARY_DIR}/cmake/CPM.cmake)
 
 if(WIN32)
 	add_definitions(-D_CRT_SECURE_NO_WARNINGS)
