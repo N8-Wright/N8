@@ -17,6 +17,18 @@ CPMAddPackage(
 	OPTIONS "CROW_BUILD_EXAMPLES OFF" "CROW_BUILD_TESTS OFF" "CROW_INSTALL OFF"
 )
 
+CPMAddPackage(
+	NAME md4c
+	GITHUB_REPOSITORY mity/md4c
+	GIT_TAG release-0.5.2
+	VERSION 0.5.2
+	OPTIONS "BUILD_MD2HTML_EXECUTABLE OFF"
+)
+if (md4c_ADDED)
+	# Make sure we can include md4c.h and md4c-html.h when linking against cmake targets.
+	target_include_directories(md4c SYSTEM INTERFACE $<BUILD_INTERFACE:${md4c_SOURCE_DIR}/src>)
+endif()
+
 add_library(N8Objects STATIC
 		      KVStore.hpp
 		      KVStore.cpp
@@ -36,7 +48,11 @@ target_link_options(N8Objects PRIVATE
 )
 
 
-add_executable(Website $<TARGET_OBJECTS:N8Objects> Website.cpp)
+add_executable(Website $<TARGET_OBJECTS:N8Objects>
+		       Website.cpp
+		       BlogController.cpp
+		       BlogController.hpp
+)
 target_compile_options(Website PRIVATE
 	"$<$<CONFIG:Debug>:${N8_COMPILE_OPTIONS_DEBUG}>"
 	"$<$<CONFIG:RelWithDebInfo>:${N8_COMPILE_OPTIONS_DEBUG}>"
@@ -50,4 +66,4 @@ target_link_options(Website PRIVATE
 	"$<$<CONFIG:MinSizeRel>:${N8_LINK_OPTIONS}>"
 )
 
-target_link_libraries(Website PRIVATE Crow::Crow)
+target_link_libraries(Website PRIVATE Crow::Crow md4c-html)
