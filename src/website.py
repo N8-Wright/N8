@@ -1,10 +1,14 @@
-﻿from typing import Union
-from fastapi import FastAPI
+﻿from typing import Annotated
+from fastapi import Depends, FastAPI
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
+from authentication import require_auth
+from settings import Settings
+from blog_posts import BlogPosts
 
-from blog_posts import blog_posts
-
-posts = blog_posts("blogs.db")
+g_settings = Settings()
+posts = BlogPosts("blogs.db")
 app = FastAPI()
+security = HTTPBasic()
 
 @app.get("/")
 def read_root():
@@ -14,7 +18,7 @@ def read_root():
     
     return {"Hello": "World"}
 
-
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Union[str, None] = None):
-    return {"item_id": item_id, "q": q}
+@app.get("/admin/posts")
+def read_admin_page(credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    require_auth(g_settings, credentials)
+    return credentials.username

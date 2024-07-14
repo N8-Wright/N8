@@ -4,7 +4,7 @@ from time import mktime
 from uuid import uuid4, UUID
 from blog_post import BlogPost
 
-class blog_posts:
+class BlogPosts:
     def __init__(self, db_path):
         self.db_path = db_path
         db_connection = sqlite3.connect(db_path)
