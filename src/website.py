@@ -1,13 +1,11 @@
-﻿from datetime import datetime
-from typing import Annotated
-from uuid import UUID, uuid4
+﻿from typing import Annotated
+from uuid import UUID
 from fastapi import Depends, FastAPI, Request, Form
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse, Response
 from authentication import require_auth
-from blog_post import BlogPost
 from settings import Settings
 from mistletoe import markdown
 from blog_posts import BlogPosts
