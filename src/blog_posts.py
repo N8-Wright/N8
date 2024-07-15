@@ -1,6 +1,7 @@
 ﻿import sqlite3
 from datetime import datetime
 from time import mktime
+from typing import Generator
 from uuid import uuid4, UUID
 from blog_post import BlogPost
 
@@ -45,4 +46,17 @@ class BlogPosts:
             return BlogPost(id, datetime.fromtimestamp(post[1]), datetime.fromtimestamp(post[2]), post[3])
         
         return None
+    
+    def get_posts(self) -> list[BlogPost]:
+        db_connection = sqlite3.connect(self.db_path)
+        cursor = db_connection.cursor()
+        res = cursor.execute("SELECT * FROM posts")
+        
+        posts = res.fetchall()
+        result = []
+        for post in posts:
+            result.append(BlogPost(UUID(bytes=post[0]), datetime.fromtimestamp(post[1]), datetime.fromtimestamp(post[2]), post[3]))
+        
+        db_connection.close()
+        return result
         

@@ -46,10 +46,10 @@ def get_post(id: UUID, request: Request):
 @app.get("/admin/posts")
 def read_admin_pages(request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     require_auth(g_settings, credentials)
-    posts = [BlogPost(uuid4(), datetime.now(), datetime.now(), "Testing")]
+    blog_posts = posts.get_posts()
 
     return templates.TemplateResponse(
-        request=request, name="admin_posts.html", context={"posts": posts}
+        request=request, name="admin_posts.html", context={"posts": blog_posts}
     )
 
 @app.get("/admin/edit/{id}")
@@ -70,9 +70,9 @@ def get_create_post_page(request: Request, credentials: Annotated[HTTPBasicCrede
     )
 
 @app.post("/admin/post/update/{id}")
-def update_post(id: UUID, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+def update_post(id: UUID, post_content: Annotated[str, Form()], request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     require_auth(g_settings, credentials)
-    posts.update_post(id, request.body())
+    posts.update_post(id, post_content)
     post = posts.get_post(id)
     rendered = markdown(post.content)
 
