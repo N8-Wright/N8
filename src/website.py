@@ -58,7 +58,7 @@ def read_admin_post(id: UUID, request: Request, credentials: Annotated[HTTPBasic
     post = posts.get_post(id)
     if post != None:
         return templates.TemplateResponse(
-            request=request, name="edit_post.html", context={"body": post.content, "post_id": id}
+            request=request, name="edit_post.html", context={"body": post.content, "post_id": id, "post_name": post.name }
         )
 
 @app.get("/admin/create_post")
@@ -70,9 +70,9 @@ def get_create_post_page(request: Request, credentials: Annotated[HTTPBasicCrede
     )
 
 @app.post("/admin/post/update/{id}")
-def update_post(id: UUID, post_content: Annotated[str, Form()], request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+def update_post(id: UUID, post_name: Annotated[str, Form()], post_content: Annotated[str, Form()], request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     require_auth(g_settings, credentials)
-    posts.update_post(id, post_content)
+    posts.update_post(id, post_name, post_content)
     post = posts.get_post(id)
     rendered = markdown(post.content)
 
@@ -81,7 +81,9 @@ def update_post(id: UUID, post_content: Annotated[str, Form()], request: Request
     )
 
 @app.post("/admin/post/create")
-async def create_post(post_content: Annotated[str, Form()], credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+async def create_post(post_name: Annotated[str, Form()],
+                      post_content: Annotated[str, Form()],
+                      credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     require_auth(g_settings, credentials)
-    id = posts.create_post(post_content) 
+    id = posts.create_post(post_name, post_content) 
     return RedirectResponse(app.url_path_for("get_post", id=id), status_code=status.HTTP_302_FOUND)

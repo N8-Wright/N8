@@ -10,10 +10,10 @@ class BlogPosts:
         self.db_path = db_path
         db_connection = sqlite3.connect(db_path)
         cursor = db_connection.cursor()
-        cursor.execute("CREATE TABLE IF NOT EXISTS posts(id BLOB PRIMARY KEY, created_date INTEGER, modified_date INTEGER, content TEXT)")
+        cursor.execute("CREATE TABLE IF NOT EXISTS posts(id BLOB PRIMARY KEY, created_date INTEGER, modified_date INTEGER, content TEXT, name TEXT)")
         db_connection.close()
     
-    def create_post(self, content: str) -> UUID:
+    def create_post(self, name: str, content: str) -> UUID:
         db_connection = sqlite3.connect(self.db_path)
         cursor = db_connection.cursor()
         
@@ -21,12 +21,12 @@ class BlogPosts:
         unix_now = mktime(now.timetuple())
 
         new_id = uuid4()
-        cursor.execute("INSERT INTO posts VALUES(?, ?, ?, ?)", (new_id.bytes, unix_now, unix_now, content))
+        cursor.execute("INSERT INTO posts VALUES(?, ?, ?, ?, ?)", (new_id.bytes, unix_now, unix_now, content, name))
         db_connection.commit()
         db_connection.close()
         return new_id
     
-    def update_post(self, id: UUID, content: str) -> None:
+    def update_post(self, id: UUID, name: str, content: str) -> None:
         db_connection = sqlite3.connect(self.db_path)
         cursor = db_connection.cursor()
     
@@ -34,6 +34,7 @@ class BlogPosts:
         unix_now = mktime(now.timetuple())
         cursor.execute("UPDATE posts SET modified_date=? WHERE id=?", (unix_now, id.bytes, ))
         cursor.execute("UPDATE posts SET content=? WHERE id=?", (content, id.bytes, ))
+        cursor.execute("UPDATE posts SET name=? WHERE id=?", (name, id.bytes, ))
         db_connection.commit()
         db_connection.close()
 
@@ -43,7 +44,7 @@ class BlogPosts:
         post = cursor.execute("SELECT * FROM posts WHERE id=?", (id.bytes, )).fetchone()
         db_connection.close()
         if post != None:
-            return BlogPost(id, datetime.fromtimestamp(post[1]), datetime.fromtimestamp(post[2]), post[3])
+            return BlogPost(id, datetime.fromtimestamp(post[1]), datetime.fromtimestamp(post[2]), post[3], post[4])
         
         return None
     
@@ -55,7 +56,7 @@ class BlogPosts:
         posts = res.fetchall()
         result = []
         for post in posts:
-            result.append(BlogPost(UUID(bytes=post[0]), datetime.fromtimestamp(post[1]), datetime.fromtimestamp(post[2]), post[3]))
+            result.append(BlogPost(UUID(bytes=post[0]), datetime.fromtimestamp(post[1]), datetime.fromtimestamp(post[2]), post[3], post[4]))
         
         db_connection.close()
         return result
