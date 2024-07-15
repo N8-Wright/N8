@@ -12,7 +12,7 @@ class BlogPosts:
         cursor.execute("CREATE TABLE IF NOT EXISTS posts(id BLOB PRIMARY KEY, created_date INTEGER, modified_date INTEGER, content TEXT)")
         db_connection.close()
     
-    def create_post(self, content) -> UUID:
+    def create_post(self, content: str) -> UUID:
         db_connection = sqlite3.connect(self.db_path)
         cursor = db_connection.cursor()
         

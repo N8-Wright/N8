@@ -1,0 +1,19 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link href="{{ url_for('static', path='/style.css') }}" rel="stylesheet">
+</head>
+
+<body>
+    <form action="{{ url_for('update_post', id=post_id) }}" method="post">
+        <input type="hidden" id="id" name="id" value="{{ post_id }}">
+        <textarea id="post_content" name="post_content" rows="20" cols="120">
+        {{ body|safe }}
+        </textarea>
+
+        <input type="submit" value="Submit" />
+    </form>
+</body>
+
+</html>

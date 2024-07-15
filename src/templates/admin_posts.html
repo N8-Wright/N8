@@ -6,6 +6,8 @@
 </head>
 
 <body>
+    <a href="{{ url_for('get_create_post_page') }}">Create New Post</a>
+
     {% for post in posts %}
     <li><a href="{{ url_for('read_admin_post', id=post.id) }}">{{ post.id }}</a></li>
     {% endfor %}
