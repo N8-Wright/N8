@@ -21,13 +21,10 @@ templates = Jinja2Templates(directory="templates/")
 
 @app.get("/")
 def read_root(request: Request):
-    id = posts.create_post("Testing 1234")
-    posts.update_post(id, "12345")
-    post = posts.get_post(id)
-    rendered = markdown("# Hello")
+    blog_posts = posts.get_posts()
 
     return templates.TemplateResponse(
-        request=request, name="basic_page.html", context={"body": rendered}
+        request=request, name="home.html", context={"posts": blog_posts}
     )
 
 @app.get("/posts/{id}")
