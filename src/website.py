@@ -21,7 +21,7 @@ templates = Jinja2Templates(directory="templates/")
 
 @app.get("/")
 def read_root(request: Request):
-    blog_posts = posts.get_posts()
+    blog_posts = posts.get_latest_posts()
 
     return templates.TemplateResponse(
         request=request, name="home.html", context={"posts": blog_posts}

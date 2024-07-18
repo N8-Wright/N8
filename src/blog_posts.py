@@ -52,4 +52,17 @@ class BlogPosts:
             result.append(BlogPost(UUID(bytes=post[0]), datetime.fromtimestamp(post[1]), datetime.fromtimestamp(post[2]), post[3], post[4]))
         
         return result
+    
+    def get_latest_posts(self) -> list[BlogPost]:
+        posts = []
+        with connection(self.db_path) as db_connection:
+            cursor = db_connection.cursor()
+            res = cursor.execute("SELECT * FROM posts ORDER BY created_date DESC LIMIT 5")
+            posts = res.fetchall()
+        
+        result = []
+        for post in posts:
+            result.append(BlogPost(UUID(bytes=post[0]), datetime.fromtimestamp(post[1]), datetime.fromtimestamp(post[2]), post[3], post[4]))
+        
+        return result
         

@@ -1,14 +1,25 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 <head>
     {% include "head.html" %}
 </head>
 
+{% include "banner.html" %}
+
 <body>
-    {% for post in posts %}
-    <li><a href="{{ url_for('get_post', id=post.id) }}">{{ post.name }}</a></li>
-    {% endfor %}
+    <div class="w-full h-screen bg-white dark:bg-slate-900/90 transition-colors duration-700">
+        <div class=" max-w-3xl mx-auto">
+            <h1 class="text-slate-900 dark:text-slate-200">Nathan Wright's Personal Website</h1>
+
+            <h2 class="text-slate-900 dark:text-slate-200">Reent Posts</h2>
+            {% for post in posts %}
+            <a class="text-slate-900 dark:text-slate-200" href="{{ url_for('get_post', id=post.id) }}">{{
+                post.created_date }}: {{ post.name }}</a>
+            <br>
+            {% endfor %}
+        </div>
+    </div>
 </body>
 
 </html>
