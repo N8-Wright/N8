@@ -7,7 +7,24 @@
 {% include "banner.html" %}
 
 <body>
-    {{ body|safe }}
+    <div class="w-full h-screen bg-white dark:bg-slate-900/90 transition-colors duration-700">
+        <div class="flex lg:flex-row max-md:flex-col-reverse lg:pt-10">
+            <div class="mx-auto text-slate-900 dark:text-slate-200">
+                <h1 class="font-semibold font-serif">{{ post.name }}</h1>
+                <h3 class="italic text-sm text-slate-400 dark:text-slate-500">Posted On: {{
+                    post.created_date.strftime('%a %d %b %Y,
+                    %I:%M%p') }}
+                </h3>
+                {% if post.created_date != post.modified_date %}
+                <h3 class="italic text-sm text-slate-400 dark:text-slate-500">Modified On: {{
+                    post.modified_date.strftime('%a %d %b %Y, %I:%M%p') }}</h3>
+                {% endif %}
+
+                <br>
+                {{ body|safe }}
+            </div>
+        </div>
+    </div>
 </body>
 
 </html>

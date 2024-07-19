@@ -22,7 +22,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse, Response
 from authentication import require_auth
 from settings import Settings
-from mistletoe import markdown
+from mistletoe import markdown, HtmlRenderer
 from blog_posts import BlogPosts
 from starlette import status
 
@@ -50,7 +50,7 @@ def get_post(id: UUID, request: Request):
     
     rendered = markdown(post.content)
     return templates.TemplateResponse(
-        request=request, name="basic_page.html", context={"body": rendered}
+        request=request, name="basic_page.html", context={"post": post, "body": rendered}
     )
 
 @app.get("/admin/posts")
@@ -83,12 +83,7 @@ def get_create_post_page(request: Request, credentials: Annotated[HTTPBasicCrede
 def update_post(id: UUID, post_name: Annotated[str, Form()], post_content: Annotated[str, Form()], request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     require_auth(g_settings, credentials)
     posts.update_post(id, post_name, post_content)
-    post = posts.get_post(id)
-    rendered = markdown(post.content)
-
-    return templates.TemplateResponse(
-        request=request, name="basic_page.html", context={"body": rendered}
-    )
+    return RedirectResponse(app.url_path_for("get_post", id=id), status_code=status.HTTP_302_FOUND)
 
 @app.post("/admin/post/create")
 async def create_post(post_name: Annotated[str, Form()],
