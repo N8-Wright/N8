@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    {% include "head.html" %}
+</head>
+
+{% include "banner.html" %}
+
+<body>
+    <div class="w-full h-screen bg-white dark:bg-slate-900/90 transition-colors duration-700">
+        <div class="flex lg:flex-row max-md:flex-col-reverse lg:pt-10">
+            <div class="mx-auto">
+                <div>
+                    <h2 class="text-slate-900 dark:text-slate-200">All Posts</h2>
+                    {% for post in posts %}
+                    <a class="text-slate-500  hover:text-teal-600" href="{{ url_for('get_post', id=post.id) }}">
+                        - {{ post.created_date.strftime('%a %d %b %Y') }}: {{ post.name }}
+                    </a>
+                    <br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+</html>

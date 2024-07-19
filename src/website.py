@@ -52,6 +52,13 @@ def get_post(id: UUID, request: Request):
     return templates.TemplateResponse(
         request=request, name="basic_page.html", context={"post": post, "body": rendered}
     )
+    
+@app.get("/posts")
+def get_posts(request: Request):
+    all_posts = posts.get_posts()
+    return templates.TemplateResponse(
+        request=request, name="posts.html", context={"posts": all_posts}
+    )
 
 @app.get("/admin/posts")
 def read_admin_pages(request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):

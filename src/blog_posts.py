@@ -58,7 +58,7 @@ class BlogPosts:
         posts = []
         with connection(self.db_path) as db_connection:
             cursor = db_connection.cursor()
-            res = cursor.execute("SELECT * FROM posts")
+            res = cursor.execute("SELECT * FROM posts ORDER BY created_date DESC")
             posts = res.fetchall()
         
         result = []
