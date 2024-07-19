@@ -9,15 +9,28 @@
 
 <body>
     <div class="w-full h-screen bg-white dark:bg-slate-900/90 transition-colors duration-700">
-        <div class=" max-w-3xl mx-auto">
-            <h1 class="text-slate-900 dark:text-slate-200">Nathan Wright's Personal Website</h1>
+        <div class="flex lg:flex-row max-md:flex-col-reverse lg:pt-10">
+            <div class="mx-auto">
+                <div>
+                    <h1 class="text-slate-900 dark:text-slate-200">Nathan Wright's Personal Website</h1>
 
-            <h2 class="text-slate-900 dark:text-slate-200">Reent Posts</h2>
-            {% for post in posts %}
-            <a class="text-slate-900 dark:text-slate-200" href="{{ url_for('get_post', id=post.id) }}">{{
-                post.created_date }}: {{ post.name }}</a>
-            <br>
-            {% endfor %}
+                    <h2 class="text-slate-900 dark:text-slate-200">Reent Posts</h2>
+                    {% for post in posts %}
+                    <a class="text-slate-900 dark:text-slate-200" href="{{ url_for('get_post', id=post.id) }}">{{
+                        post.created_date.strftime('%a %d %b %Y, %I:%M%p') }}: {{ post.name }}</a>
+                    <br>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class=" text-slate-900 dark:text-slate-200 text-center lg:pr-10">
+                <div class="flex justify-center">
+                    <img class="rounded-full w-40 h-52" src="{{ url_for('static', path='/me.jpg') }}"
+                        alt="A picture of me">
+                </div>
+
+                Email me: <a href="mailto: nathan@nathanieljwright.com">nathan@nathanieljwright.com</a></li>
+            </div>
         </div>
     </div>
 </body>
