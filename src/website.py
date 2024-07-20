@@ -21,6 +21,7 @@ from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse, Response
 from authentication import require_auth
+from blog_post_comments import BlogPostComments
 from settings import Settings
 from mistletoe import markdown, HtmlRenderer
 from blog_posts import BlogPosts
@@ -28,6 +29,8 @@ from starlette import status
 
 g_settings = Settings()
 posts = BlogPosts("blogs.db")
+comments = BlogPostComments("blogs.db")
+
 app = FastAPI()
 security = HTTPBasic()
 
@@ -45,13 +48,20 @@ def read_root(request: Request):
 @app.get("/posts/{id}")
 def get_post(id: UUID, request: Request):
     post = posts.get_post(id)
+    post_comments = comments.get_comments(id)
+    
     if post == None:
         return Response(status_code=404)
     
     rendered = markdown(post.content)
     return templates.TemplateResponse(
-        request=request, name="basic_page.html", context={"post": post, "body": rendered}
+        request=request, name="basic_page.html", context={"post": post, "comments": post_comments, "body": rendered}
     )
+    
+@app.post("/comment/{post_id}")
+def add_comment(post_id: UUID, commenter: Annotated[str, Form()], comment: Annotated[str, Form()], request: Request):
+    comments.add_comment(post_id, commenter, comment)
+    return RedirectResponse(app.url_path_for("get_post", id=post_id), status_code=status.HTTP_302_FOUND) 
     
 @app.get("/posts")
 def get_posts(request: Request):

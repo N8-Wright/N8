@@ -1,0 +1,33 @@
+<h2>Comments:</h2>
+<form action="{{ url_for('add_comment', post_id=post.id) }}" method="post">
+    Name:
+    <br>
+    <input
+        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        type="text" id="commenter" name="commenter" />
+    <br>
+
+    Comment:
+    <br>
+    <textarea
+        class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+        id="comment" name="comment" rows="2" cols="40">
+</textarea>
+    <br>
+    <input type="submit" value="Submit" />
+</form>
+
+{% for comment in comments %}
+
+<div class="flex text-center items-center">
+    <div class="text-pretty border-l-4 mr-2">{{ comment.commenter }}</div>
+    <div class="italic text-sm text-slate-400 dark:text-slate-500">
+        {{ comment.created_date.strftime('%a %d %b %Y, %I:%M%p') }}
+    </div>
+</div>
+<div
+    class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+    {{ comment.comment }}
+</div>
+<br>
+{% endfor %}
