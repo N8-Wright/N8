@@ -59,7 +59,7 @@ def get_post(id: UUID, request: Request):
     )
     
 @app.post("/comment/{post_id}")
-def add_comment(post_id: UUID, commenter: Annotated[str, Form()], comment: Annotated[str, Form()], request: Request):
+def add_comment(post_id: UUID, commenter: Annotated[str, Form(max_length=50)], comment: Annotated[str, Form(max_length=8192)], request: Request):
     comments.add_comment(post_id, commenter, comment)
     return RedirectResponse(app.url_path_for("get_post", id=post_id), status_code=status.HTTP_302_FOUND) 
     
