@@ -14,6 +14,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 from datetime import datetime
+from sqlite3 import Cursor
 from time import mktime
 from uuid import UUID, uuid4
 from blog_post_comment import BlogPostComment
@@ -24,7 +25,7 @@ class BlogPostComments:
         self.db_path = db_path
         with connection(db_path) as db_connection:     
             cursor = db_connection.cursor()
-            cursor.execute("CREATE TABLE IF NOT EXISTS comments(id BLOB PRIMARY KEY, post_id BLOB, created_date INTEGER, content TEXT, commenter_name TEXT, FOREIGN KEY(post_id) REFERENCES posts(id))")
+            cursor.execute("CREATE TABLE IF NOT EXISTS comments(id BLOB PRIMARY KEY, post_id BLOB, created_date INTEGER, content TEXT, commenter_name TEXT, visible BOOLEAN, FOREIGN KEY(post_id) REFERENCES posts(id))")
             
     def add_comment(self, post_id: UUID, commenter_name: str, comment: str):
         now = datetime.now()
@@ -33,12 +34,17 @@ class BlogPostComments:
         
         with connection(self.db_path) as db_connection:
             with transaction(db_connection) as cursor:
-                cursor.execute("INSERT INTO comments VALUES(?, ?, ?, ?, ?)", (new_id.bytes, post_id.bytes, unix_now, comment, commenter_name))
+                cursor.execute("INSERT INTO comments VALUES(?, ?, ?, ?, ?, ?)", (new_id.bytes, post_id.bytes, unix_now, comment, commenter_name, False))
     
-    def get_comments(self, post_id: UUID) -> list[BlogPostComment]:
+    def get_comments(self, post_id: UUID, show_only_visible=True) -> list[BlogPostComment]:
         comments = []
         with connection(self.db_path) as db_connection:
-            res = db_connection.execute("SELECT * FROM comments WHERE post_id=? ORDER BY created_date DESC", (post_id.bytes, ))
+            res = {}
+            if show_only_visible:
+                res = db_connection.execute("SELECT * FROM comments WHERE post_id=? AND visible=True ORDER BY created_date DESC", (post_id.bytes, ))
+            else:
+                res = db_connection.execute("SELECT * FROM comments WHERE post_id=? ORDER BY created_date DESC", (post_id.bytes, ))
+                
             comments = res.fetchall()
             
         result = []
@@ -47,7 +53,8 @@ class BlogPostComments:
                                           post_id=UUID(bytes=comment[1]),
                                           created_date=datetime.fromtimestamp(comment[2]),
                                           comment=comment[3],
-                                          commenter=comment[4]))
+                                          commenter=comment[4],
+                                          visible=comment[5]))
         
         return result
     
@@ -58,10 +65,16 @@ class BlogPostComments:
                 post_id=UUID(bytes=comment[1]),
                 created_date=datetime.fromtimestamp(comment[2]),
                 comment=comment[3],
-                commenter=comment[4])
+                commenter=comment[4],
+                visible=comment[5])
             
     def delete_comment(self, id: UUID):
          with connection(self.db_path) as db_connection:
             with transaction(db_connection) as cursor:
                 cursor.execute("DELETE FROM comments WHERE id=?", (id.bytes, ))
+                
+    def make_visible(self, id: UUID):
+        with connection(self.db_path) as db_connection:
+            with transaction(db_connection) as cursor:
+                cursor.execute("UPDATE comments SET visible=True WHERE id=?", (id.bytes, ))
             

@@ -32,6 +32,13 @@
             <input type="hidden" id="id" name="id" value="{{ comment.id }}">
             <input type="submit" value="Delete" />
         </form>
+
+        {% if not comment.visible %}
+        <form action="{{ url_for('make_comment_visible') }}" method="post">
+            <input type="hidden" id="id" name="id" value="{{ comment.id }}">
+            <input type="submit" value="Make Visible" />
+        </form>
+        {% endif %}
         <br>
         {% endfor %}
     </ul>

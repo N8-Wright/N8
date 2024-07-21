@@ -57,12 +57,18 @@ def get_post(id: UUID, request: Request):
     return templates.TemplateResponse(
         request=request, name="basic_page.html", context={"post": post, "comments": post_comments, "body": rendered}
     )
+
+@app.get("/comment/thanks")
+def comment_thanks(request: Request):
+    return templates.TemplateResponse(
+        request=request, name="comment_thank_you.html"
+    )
     
 @app.post("/comment/{post_id}")
 def add_comment(post_id: UUID, commenter: Annotated[str, Form(max_length=50)], comment: Annotated[str, Form(max_length=8192)], request: Request):
     comments.add_comment(post_id, commenter, comment)
-    return RedirectResponse(app.url_path_for("get_post", id=post_id), status_code=status.HTTP_302_FOUND) 
-    
+    return RedirectResponse(app.url_path_for("comment_thanks"), status_code=status.HTTP_302_FOUND)
+        
 @app.get("/posts")
 def get_posts(request: Request):
     all_posts = posts.get_posts()
@@ -83,7 +89,7 @@ def read_admin_pages(request: Request, credentials: Annotated[HTTPBasicCredentia
 def read_admin_post(id: UUID, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     require_auth(g_settings, credentials)
     post = posts.get_post(id)
-    post_comments = comments.get_comments(id)
+    post_comments = comments.get_comments(id, show_only_visible=False)
     if post != None:
         return templates.TemplateResponse(
             request=request, name="edit_post.html", context={"body": post.content, "post": post, "comments": post_comments }
@@ -116,6 +122,13 @@ def delete_comment(id: Annotated[UUID, Form()], request: Request, credentials: A
     require_auth(g_settings, credentials)
     comment = comments.get_comment(id)
     comments.delete_comment(id)
+    return RedirectResponse(app.url_path_for("get_post", id=comment.post_id), status_code=status.HTTP_302_FOUND)
+
+@app.post("/admin/comment/visible")
+def make_comment_visible(id: Annotated[UUID, Form()], request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    require_auth(g_settings, credentials)
+    comment = comments.get_comment(id)
+    comments.make_visible(id)
     return RedirectResponse(app.url_path_for("get_post", id=comment.post_id), status_code=status.HTTP_302_FOUND)
 
     

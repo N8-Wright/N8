@@ -21,10 +21,12 @@ class BlogPostComment:
     commenter: str
     id: UUID
     post_id: UUID
+    visible: bool
 
-    def __init__(self, id: UUID, post_id: UUID, created_date: datetime, comment: str, commenter: str):
+    def __init__(self, id: UUID, post_id: UUID, created_date: datetime, comment: str, commenter: str, visible: bool):
         self.id = id
         self.post_id = post_id
         self.created_date = created_date
         self.comment = comment
         self.commenter = commenter
+        self.visible = visible
