@@ -27,7 +27,6 @@ from mistletoe import markdown, HtmlRenderer
 from blog_posts import BlogPosts
 from starlette import status
 from jinja2 import pass_context
-from fastapi.middleware.httpsredirect import HTTPSRedirectMiddleware
 
 g_settings = Settings()
 posts = BlogPosts("blogs.db")
@@ -38,10 +37,19 @@ security = HTTPBasic()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
-if not g_settings.development:
-    app.add_middleware(HTTPSRedirectMiddleware)
+
+
+@pass_context
+def urlx_for(context: dict, name: str, **path_params: Any, ) -> str:
+    request: Request = context['request']
+    http_url = request.url_for(name, **path_params)
+    if scheme := request.headers.get('x-forwarded-proto'):
+        return http_url.replace(scheme=scheme)
+    return http_url
+
 
 templates = Jinja2Templates(directory="templates/")
+templates.env.globals['url_for'] = urlx_for
 
 @app.get("/")
 def read_root(request: Request):
