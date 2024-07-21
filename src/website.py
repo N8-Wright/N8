@@ -83,9 +83,10 @@ def read_admin_pages(request: Request, credentials: Annotated[HTTPBasicCredentia
 def read_admin_post(id: UUID, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     require_auth(g_settings, credentials)
     post = posts.get_post(id)
+    post_comments = comments.get_comments(id)
     if post != None:
         return templates.TemplateResponse(
-            request=request, name="edit_post.html", context={"body": post.content, "post_id": id, "post_name": post.name }
+            request=request, name="edit_post.html", context={"body": post.content, "post": post, "comments": post_comments }
         )
 
 @app.get("/admin/create_post")
@@ -109,3 +110,12 @@ async def create_post(post_name: Annotated[str, Form()],
     require_auth(g_settings, credentials)
     id = posts.create_post(post_name, post_content) 
     return RedirectResponse(app.url_path_for("get_post", id=id), status_code=status.HTTP_302_FOUND)
+
+@app.post("/admin/comment/delete")
+def delete_comment(id: Annotated[UUID, Form()], request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    require_auth(g_settings, credentials)
+    comment = comments.get_comment(id)
+    comments.delete_comment(id)
+    return RedirectResponse(app.url_path_for("get_post", id=comment.post_id), status_code=status.HTTP_302_FOUND)
+
+    

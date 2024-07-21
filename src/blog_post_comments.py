@@ -50,4 +50,18 @@ class BlogPostComments:
                                           commenter=comment[4]))
         
         return result
+    
+    def get_comment(self, id: UUID) -> BlogPostComment:
+        with connection(self.db_path) as db_connection:
+            comment = db_connection.execute("SELECT * FROM comments where id=?", (id.bytes, )).fetchone()
+            return BlogPostComment(id=UUID(bytes=comment[0]),
+                post_id=UUID(bytes=comment[1]),
+                created_date=datetime.fromtimestamp(comment[2]),
+                comment=comment[3],
+                commenter=comment[4])
+            
+    def delete_comment(self, id: UUID):
+         with connection(self.db_path) as db_connection:
+            with transaction(db_connection) as cursor:
+                cursor.execute("DELETE FROM comments WHERE id=?", (id.bytes, ))
             
