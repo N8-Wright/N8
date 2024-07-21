@@ -21,14 +21,14 @@
         @apply text-2xl text-pretty pb-3 pt-2;
     }
     h2 {
-        @apply text-xl text-pretty;
+        @apply text-xl text-pretty pb-3 pt-2;
     }
     h3 {
-        @apply text-lg text-pretty;
+        @apply text-lg text-pretty pb-3 pt-2;
     }
 
     code {
-        @apply block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
+        @apply block p-2.5 overflow-scroll text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500;
     }
 }
 
