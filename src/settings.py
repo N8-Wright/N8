@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     app_name: str = "N8's Website"
     app_username: str
     app_password: str
+    development: bool = False
 
     model_config = SettingsConfigDict(env_file=".env")
     
