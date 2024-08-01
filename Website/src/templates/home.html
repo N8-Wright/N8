@@ -8,33 +8,59 @@
 {% include "banner.html" %}
 
 <body>
-    <div class="w-full h-screen bg-white dark:bg-slate-900/90 transition-colors duration-700">
-        <div class="flex lg:flex-row max-md:flex-col-reverse lg:pt-10">
-            <div class="mx-auto">
-                <div>
-                    <h1 class="text-slate-900 dark:text-slate-200 font-semibold font-serif">Nathan Wright's Personal
-                        Website</h1>
+    <div class="bg-white dark:bg-slate-900/90 transition-colors duration-700">
+        <main class="max-w-[52rem] mx-auto px-4 pb-28 sm:px-6 md:px-8 xl:px-12 lg:max-w-6xl">
+            <article
+                class="relative sm:pb-12 sm:ml-[calc(2rem+1px)] md:ml-[calc(3.5rem+1px)] lg:ml-[max(calc(14.5rem+1px),calc(100%-48rem)) ">
+                <div class="flex lg:flex-row max-md:flex-col-reverse lg:pt-10 space-y-16">
+                    <div class="text-slate-900 dark:text-slate-200">
+                        <div>
+                            <h1 class="text-slate-900 dark:text-slate-200 font-semibold font-serif">Nathan Wright's
+                                Personal
+                                Website</h1>
 
-                    <br>
-                    <h2 class="text-slate-900 dark:text-slate-200">Recent Posts</h2>
-                    {% for post in posts %}
-                    <a class="text-slate-500  hover:text-teal-600" href="{{ url_for('get_post', id=post.id) }}">
-                        - {{ post.name }}
-                    </a>
-                    <br>
-                    {% endfor %}
+                            <br>
+                            <p class="text-center">
+                                I'm a Senior Software Developer at <a href="https://www.aveva.com/en/"
+                                    target="_blank">AVEVA</a>. At work, my focus has been on efficient storage and
+                                retrieval of
+                                insdustrial data in AVEVA's <a
+                                    href="https://docs.aveva.com/bundle/connect-data-services/page/1263105.html"
+                                    target="_blank">CONNECT data services</a>.
+                            </p>
+                            <br>
+                            <p class="text-center">
+                                In my own time, I'm a avid open source and home server enthusiast. I've been tinkering
+                                with Linux as a server and desktop platform for ~7 years. I love reading fantasy, sci-fi
+                                and whatever else is sparking my interest and often have 2-3 library books checked out
+                                at once!
+                            </p>
+                            <br>
+                            <p class="text-center">
+                                I live with my fiancé and two cats in Dublin, CA.
+                            </p>
+                            <br>
+                            <h2 class="text-slate-900 dark:text-slate-200">Recent Posts</h2>
+                            {% for post in posts %}
+                            <a class="text-slate-500  hover:text-teal-600" href="{{ url_for('get_post', id=post.id) }}">
+                                - {{ post.name }}
+                            </a>
+                            <br>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class=" text-slate-900 dark:text-slate-200 text-center lg:pr-10">
+                        <div class="flex justify-center">
+                            <img class="rounded-full w-40 h-52" src="{{ url_for('static', path='/me.jpg') }}"
+                                alt="A picture of me">
+                        </div>
+
+                        Email me: <a href="mailto: nathan@nathanieljwright.com">nathan@nathanieljwright.com</a></li>
+                    </div>
                 </div>
-            </div>
-
-            <div class=" text-slate-900 dark:text-slate-200 text-center lg:pr-10">
-                <div class="flex justify-center">
-                    <img class="rounded-full w-40 h-52" src="{{ url_for('static', path='/me.jpg') }}"
-                        alt="A picture of me">
-                </div>
-
-                Email me: <a href="mailto: nathan@nathanieljwright.com">nathan@nathanieljwright.com</a></li>
-            </div>
-        </div>
+            </article>
+        </main>
     </div>
 </body>
 

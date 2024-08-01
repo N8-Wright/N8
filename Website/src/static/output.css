@@ -534,6 +534,17 @@ code:focus:where(.dark, .dark *) {
   --tw-ring-color: rgb(59 130 246 / var(--tw-ring-opacity));
 }
 
+a {
+  --tw-text-opacity: 1;
+  color: rgb(100 116 139 / var(--tw-text-opacity));
+  text-decoration-line: underline;
+}
+
+a:hover {
+  --tw-text-opacity: 1;
+  color: rgb(13 148 136 / var(--tw-text-opacity));
+}
+
 *, ::before, ::after {
   --tw-border-spacing-x: 0;
   --tw-border-spacing-y: 0;
