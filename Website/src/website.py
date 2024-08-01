@@ -48,7 +48,7 @@ templates.env.globals['url_for'] = urlx_for
 
 @app.get("/static/{path:path}")
 async def static(path: str):
-    if path != "output.css" and path != "sphagetti.js" and path != "me.jpg":
+    if path != "output.css" and path != "spaghetti.js" and path != "me.jpg":
         return Response(status_code=404)
     
     response = FileResponse(f"static/{path}")
