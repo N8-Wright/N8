@@ -15,11 +15,11 @@
 
 from typing import Annotated, Any
 from uuid import UUID
-from fastapi import Depends, FastAPI, Request, Form
+from fastapi import Depends, FastAPI, Path, Request, Form
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
-from fastapi.responses import RedirectResponse, Response
+from fastapi.responses import FileResponse, RedirectResponse, Response
 from authentication import require_auth
 from blog_post_comments import BlogPostComments
 from settings import Settings
@@ -35,8 +35,6 @@ comments = BlogPostComments("blogs.db")
 app = FastAPI()
 security = HTTPBasic()
 
-app.mount("/static", StaticFiles(directory="static"), name="static")
-
 @pass_context
 def urlx_for(context: dict, name: str, **path_params: Any, ) -> str:
     request: Request = context['request']
@@ -47,6 +45,15 @@ def urlx_for(context: dict, name: str, **path_params: Any, ) -> str:
 
 templates = Jinja2Templates(directory="templates/")
 templates.env.globals['url_for'] = urlx_for
+
+@app.get("/static/{path:path}")
+async def static(path: str):
+    if path != "output.css" and path != "sphagetti.js" and path != "me.jpg":
+        return Response(status_code=404)
+    
+    response = FileResponse(f"static/{path}")
+    response.headers["Cache-Control"] = "max-age=31536000"
+    return response
 
 @app.get("/")
 def read_root(request: Request):
