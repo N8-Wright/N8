@@ -26,7 +26,7 @@ def connect_with_wal(database: str) -> Connection:
     return conn
 
 @contextmanager
-def connection(database: str) -> Generator[Connection, Connection, Connection]:
+def connection(database: str) -> Generator[Connection, None, None]:
     conn = connect_with_wal(database)
     try:
         yield conn
@@ -34,7 +34,7 @@ def connection(database: str) -> Generator[Connection, Connection, Connection]:
         conn.close()
         
 @contextmanager
-def transaction(conn: Connection) -> Generator[Cursor, Cursor, Cursor]:
+def transaction(conn: Connection) -> Generator[Cursor, None, None]:
     try:
         yield conn.cursor()
     except:

@@ -1,8 +1,0 @@
-﻿__pycache__
-.DS_Store
-*.db
-*.db-*
-.env
-*.env
-node_modules
-requirements.txt

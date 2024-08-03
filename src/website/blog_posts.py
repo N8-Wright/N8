@@ -17,7 +17,7 @@ from datetime import datetime
 from time import mktime
 from uuid import uuid4, UUID
 from blog_post import BlogPost
-from sqlite_helpers import connection, transaction
+from storage.sqlite_helpers import connection, transaction
 
 class BlogPosts:
     def __init__(self, db_path):

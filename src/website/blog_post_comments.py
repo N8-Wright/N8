@@ -18,7 +18,7 @@ from sqlite3 import Cursor
 from time import mktime
 from uuid import UUID, uuid4
 from blog_post_comment import BlogPostComment
-from sqlite_helpers import connection, transaction
+from storage.sqlite_helpers import connection, transaction
 
 class BlogPostComments:
     def __init__(self, db_path):
