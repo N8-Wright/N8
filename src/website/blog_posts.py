@@ -45,6 +45,11 @@ class BlogPosts:
                 cursor.execute("UPDATE posts SET content=? WHERE id=?", (content, id.bytes, ))
                 cursor.execute("UPDATE posts SET name=? WHERE id=?", (name, id.bytes, ))
 
+    def delete_post(self, id: UUID) -> None:
+        with connection(self.db_path) as db_connection:
+            with transaction(db_connection) as cursor:
+                cursor.execute("DELETE FROM posts WHERE id=?", (id.bytes, ))
+    
     def get_post(self, id: UUID) -> BlogPost | None:
         with connection(self.db_path) as db_connection:
             cursor = db_connection.cursor()

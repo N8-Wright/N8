@@ -135,6 +135,12 @@ async def create_post(post_name: Annotated[str, Form()],
     id = posts.create_post(post_name, post_content) 
     return RedirectResponse(app.url_path_for("get_post", id=id), status_code=status.HTTP_302_FOUND)
 
+@app.post("/admin/post/delete/{id}")
+def delete_post(id: UUID, request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
+    require_auth(g_settings, credentials)
+    posts.delete_post(id)
+    return RedirectResponse(app.url_path_for("read_admin_pages"), status_code=status.HTTP_302_FOUND)
+
 @app.post("/admin/comment/delete")
 def delete_comment(id: Annotated[UUID, Form()], request: Request, credentials: Annotated[HTTPBasicCredentials, Depends(security)]):
     require_auth(g_settings, credentials)
